@@ -20,12 +20,11 @@
 <body>
 	<label for="input">Drag and drop here the Premiere markers .txt file</label></br>
 	<textarea id="input" name="input" cols="100" rows="15" readonly></textarea></br>
-	
 	<select name="sep" id="sep">
 		<option value=" - ">-</option>
 		<option value=" : ">:</option>
-		<option value=" ">[space]</option>
 		<option value=" • ">•</option>
+		<option value=" ">[space]</option>
 	</select>
 	<label for="sep">Separator</label></br>
 	<input type="checkbox" id="hours" name="hours">
@@ -37,8 +36,7 @@
 	
 	<script>
 		const holder = document.getElementById("input");
-		let sep = document.getElementById("sep").value;
-		let time;
+		let sep, time;
 
 		document.getElementById("convert").onclick = function() {convert()};
 
@@ -48,7 +46,6 @@
 		}
 
 		document.getElementById("sep").onchange = function() {
-			sep = document.getElementById("sep").value;
 			convert();
 		};
 
@@ -64,6 +61,7 @@
 				const firstWord = row.split("\t")[0] + "\t\t\t";
 				const newRow = row.replace(firstWord, "");
 				document.getElementById("hours").checked ? time = 0 : time = 3;
+				sep = document.getElementById("sep").value;
 				return newRow.slice(time, 8) + sep + newRow.slice(14).replace("\t\t\t\t", "");
 			}).join("\n");
 			document.getElementById("output").value = removeColumns;
