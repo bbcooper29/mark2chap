@@ -1,8 +1,89 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<title>Marker2Chapter</title>
+	<meta charset="utf-8">
+	<title>Marker2Chapter</title>
+	<meta name="description" content="Converts exported markers from Premiere to an usable format for YouTube timestamp chapters.">
+	<style>
+		input {
+			margin: 10px;
+		}
+		select {
+			margin: 10px;
+		}
+		button {
+			display: block;
+			margin: 10px;
+		}
+	</style>
 </head>
 <body>
-<h1>Marker2Chapter</h1>
+	<label for="input">Drag and drop here the Premiere markers .txt file</label></br>
+	<textarea id="input" name="input" cols="100" rows="15" readonly></textarea></br>
+	
+	<select name="sep" id="sep">
+		<option value=" - ">-</option>
+		<option value=" : ">:</option>
+		<option value=" ">[space]</option>
+		<option value=" • ">•</option>
+	</select>
+	<label for="sep">Separator</label></br>
+	<input type="checkbox" id="hours" name="hours">
+	<label for="hours">Show hour in timestamp?</label>
+	<button id="convert" type="button">Convert</button>
+	<label for="output">Copy this and use it in your YouTube description</label></br>
+	<textarea id="output" name="output" cols="100" rows="15" readonly></textarea>
+	<button id="clear" type="button">Clear all</button>
+	
+	<script>
+		const holder = document.getElementById("input");
+		let sep = document.getElementById("sep").value;
+		let time;
+
+		document.getElementById("convert").onclick = function() {convert()};
+
+		document.getElementById("clear").onclick = function() {
+			document.getElementById("input").value = "";
+			document.getElementById("output").value = "";
+		}
+
+		document.getElementById("sep").onchange = function() {
+			sep = document.getElementById("sep").value;
+			convert();
+		};
+
+		document.getElementById("hours").onchange = function() {
+			convert();
+		};
+
+		function convert() {
+			const input = holder.value;
+			const removeRows = input.split("\n").slice(1);
+			removeRows.pop();
+			const removeColumns = removeRows.map(function (row) {
+				const firstWord = row.split("\t")[0] + "\t\t\t";
+				const newRow = row.replace(firstWord, "");
+				document.getElementById("hours").checked ? time = 0 : time = 3;
+				return newRow.slice(time, 8) + sep + newRow.slice(14).replace("\t\t\t\t", "");
+			}).join("\n");
+			document.getElementById("output").value = removeColumns;
+		}
+
+		holder.ondragover = function() {
+			this.className = "hover";
+			return false;
+		}
+
+		holder.ondrop = function(e) {
+			this.value = "";
+			var file = e.dataTransfer.files[0],
+				reader = new FileReader();
+			reader.onload = function(event) {
+				holder.value = event.target.result;
+			};
+			reader.readAsText(file, "UTF-8");
+			return false;
+		}
+	</script>
 </body>
 </html>
